@@ -22,8 +22,6 @@ export interface User {
     name: string;
 }
 
-
-
 export interface CreateUsernameResponse {
     success?: boolean;
     error?: string;
