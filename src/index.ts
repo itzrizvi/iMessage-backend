@@ -6,13 +6,24 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import pkg from 'body-parser';
-const {json} = pkg;
+const { json } = pkg;
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import { makeExecutableSchema } from "@graphql-tools/schema";
+import dotenv from 'dotenv';
+import { getServerSession } from './utils/getServerSession';
+import { GraphQLContext } from './utils/types';
+import { Session } from "next-auth";
+dotenv.config();
+
 
 interface MyContext {
-    token?: String;
+    // token: String;
+}
+
+const corsOptions = {
+    origin: [`${process.env.CLIENT_ORIGIN}`],
+    credentials: true
 }
 
 const app = express();
@@ -33,10 +44,14 @@ const server = new ApolloServer<MyContext>({
 await server.start();
 app.use(
     '/graphql',
-    cors<cors.CorsRequest>(),
+    cors<cors.CorsRequest>(corsOptions),
     json(),
     expressMiddleware(server, {
-        context: async ({ req }) => ({ token: req.headers.token }),
+        context: async ({ req, res }): Promise<GraphQLContext> => { 
+            const session = await getServerSession(req.headers.cookie) as Session | null;
+            console.log(session);
+            return { session }
+        }
     }),
 );
 
