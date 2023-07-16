@@ -2,6 +2,21 @@ import gql from "graphql-tag";
 
 
 const typeDefs = gql`
+    scalar Date
+
+    type Participant {
+        id: String
+        user: User
+        hasSeenLatestMessage: Boolean
+    }
+
+    type Conversation {
+        id: String
+        latestMessage: Message
+        participants: [Participant]
+        createdAt: Date
+        updatedAt: Date
+    }
 
     type CreateConversationResponse {
         conversationID: String
@@ -9,6 +24,10 @@ const typeDefs = gql`
 
     type Mutation {
         createConversation(participantIDs: [String]): CreateConversationResponse!
+    }
+
+    type Query {
+        conversations: [Conversation]
     }
 `;
 

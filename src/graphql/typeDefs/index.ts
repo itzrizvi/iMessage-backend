@@ -1,9 +1,11 @@
 import userTypeDefs from "./user";
 import conversationTypeDefs from "./conversations";
+import messageTypeDefs from "./messages";
 
 const typeDefs = [
     userTypeDefs,
-    conversationTypeDefs
+    conversationTypeDefs,
+    messageTypeDefs
 ];
 
 export default typeDefs;
