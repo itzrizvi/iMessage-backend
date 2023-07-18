@@ -9,13 +9,12 @@ import pkg from 'body-parser';
 const { json } = pkg;
 import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
-import { makeExecutableSchema } from "@graphql-tools/schema";
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import dotenv from 'dotenv';
 import { getServerSession } from './utils/getServerSession';
 import { GraphQLContext, Session } from './utils/types';
 import { PrismaClient } from '@prisma/client';
 dotenv.config();
-
 
 interface MyContext {
     // token: String;
@@ -23,8 +22,8 @@ interface MyContext {
 
 const corsOptions = {
     origin: [`${process.env.CLIENT_ORIGIN}`],
-    credentials: true
-}
+    credentials: true,
+};
 // Context Params
 const prisma = new PrismaClient();
 // Pubsub
@@ -32,16 +31,16 @@ const prisma = new PrismaClient();
 const app = express();
 const schema = makeExecutableSchema({
     typeDefs,
-    resolvers
+    resolvers,
 });
 const httpServer = http.createServer(app);
 const server = new ApolloServer<MyContext>({
     schema,
     csrfPrevention: true,
-    cache: "bounded",
+    cache: 'bounded',
     plugins: [
         ApolloServerPluginDrainHttpServer({ httpServer }),
-        ApolloServerPluginLandingPageLocalDefault({ embed:true })
+        ApolloServerPluginLandingPageLocalDefault({ embed: true }),
     ],
 });
 await server.start();
@@ -50,12 +49,16 @@ app.use(
     cors<cors.CorsRequest>(corsOptions),
     json(),
     expressMiddleware(server, {
-        context: async ({ req, res }): Promise<GraphQLContext> => { 
-            const session = await getServerSession(req.headers.cookie) as Session | null;
+        context: async ({ req, res }): Promise<GraphQLContext> => {
+            const session = (await getServerSession(
+                req.headers.cookie,
+            )) as Session | null;
             return { session, prisma };
-        }
+        },
     }),
 );
 
-await new Promise<void>((resolve) => httpServer.listen({ port: 4000 }, resolve));
+await new Promise<void>((resolve) =>
+    httpServer.listen({ port: 4000 }, resolve),
+);
 console.log(`🚀 Server ready at http://localhost:4000/graphql`);

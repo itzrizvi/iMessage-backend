@@ -1,19 +1,13 @@
 {
   "compilerOptions": {
-    "rootDirs": [
-      "src"
-    ],
+    "rootDirs": ["src"],
     "outDir": "dist",
-    "lib": [
-      "ES2022"
-    ],
+    "lib": ["ES2022"],
     "target": "ES2017",
     "module": "ES2022",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "ts-node": {
     "esm": true,
