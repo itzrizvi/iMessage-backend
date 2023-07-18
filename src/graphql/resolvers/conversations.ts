@@ -4,8 +4,36 @@ import { Conversation, Prisma } from '@prisma/client';
 // : Promise<Array<Conversation>>
 const resolvers = {
     Query: {
-        conversations: async (__: any, _: any, context: GraphQLContext) => {
-            console.log('CONVERSATIONS QUERY');
+        conversations: async (
+            __: any,
+            _: any,
+            context: GraphQLContext,
+        ): Promise<Array<Conversation>> => {
+            const { session, prisma } = context;
+            if (!session?.user) throw new GraphQLError('Not Authorized');
+
+            const {
+                user: { id: userID },
+            } = session;
+
+            try {
+                const conversations = await prisma.conversation.findMany({
+                    where: {
+                        participants: {
+                            some: {
+                                userId: {
+                                    equals: userID,
+                                },
+                            },
+                        },
+                    },
+                    include: conversationPopulated,
+                });
+                return conversations;
+            } catch (error: any) {
+                console.error(error);
+                throw new GraphQLError(error?.message);
+            }
         },
     },
     Mutation: {
