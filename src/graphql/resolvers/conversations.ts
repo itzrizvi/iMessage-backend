@@ -43,7 +43,7 @@ const resolvers = {
       context: GraphQLContext,
     ): Promise<{ conversationID: string }> => {
       const { participantIDs } = args;
-      const { session, prisma } = context;
+      const { session, prisma, pubsub } = context;
       if (!session?.user) throw new GraphQLError("Not Authorized");
 
       const {
@@ -65,6 +65,11 @@ const resolvers = {
           include: conversationPopulated,
         });
 
+        //
+        pubsub.publish("CONVERSATION_CREATED", {
+          conversationCreated: conversation,
+        });
+
         return {
           conversationID: conversation.id,
         };
@@ -72,6 +77,14 @@ const resolvers = {
         console.error(error);
         throw new GraphQLError(error?.message);
       }
+    },
+  },
+  Subscription: {
+    conversationCreated: {
+      subscribe: (__: any, ___: any, context: GraphQLContext) => {
+        const { pubsub } = context;
+        pubsub.asyncIterator(["CONVERSATION_CREATED"]);
+      },
     },
   },
 };
