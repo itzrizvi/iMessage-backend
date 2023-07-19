@@ -1,32 +1,32 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 const typeDefs = gql`
-    type User {
-        id: String
-        name: String
-        email: String
-        emailVarified: Boolean
-        image: String
-        username: String
-    }
+  type User {
+    id: String
+    name: String
+    email: String
+    emailVarified: Boolean
+    image: String
+    username: String
+  }
 
-    type SearchedUser {
-        id: String
-        username: String
-    }
+  type SearchedUser {
+    id: String
+    username: String
+  }
 
-    type Query {
-        searchUsers(username: String): [SearchedUser]
-    }
+  type Query {
+    searchUsers(username: String): [SearchedUser]
+  }
 
-    type Mutation {
-        createUsername(username: String): CreateUsernameResponse
-    }
+  type Mutation {
+    createUsername(username: String): CreateUsernameResponse
+  }
 
-    type CreateUsernameResponse {
-        success: Boolean
-        error: String
-    }
+  type CreateUsernameResponse {
+    success: Boolean
+    error: String
+  }
 `;
 
 export default typeDefs;
