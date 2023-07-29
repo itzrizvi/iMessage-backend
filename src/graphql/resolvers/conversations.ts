@@ -2,6 +2,7 @@ import { GraphQLError } from "graphql";
 import { ConversationPopulated, GraphQLContext } from "../../utils/types";
 import { Conversation, Prisma } from "@prisma/client";
 import { withFilter } from "graphql-subscriptions";
+import { userIsConversationParticipant } from "../../utils/userIsConversationParticipant";
 
 const resolvers = {
   Query: {
@@ -93,15 +94,15 @@ const resolvers = {
           context: GraphQLContext,
         ) => {
           const { session } = context;
+          if (!session?.user) {
+            throw new GraphQLError("Not authorized");
+          }
+          const { id: userId } = session.user;
           const {
             conversationCreated: { participants },
           } = payload;
 
-          const userIsParticipant = !!participants.find(
-            (participant) => participant.userId === session?.user?.id,
-          );
-
-          return userIsParticipant;
+          return userIsConversationParticipant(participants, userId);
         },
       ),
     },
