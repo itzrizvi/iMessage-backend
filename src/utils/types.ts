@@ -6,6 +6,7 @@ import {
 } from "../graphql/resolvers/conversations";
 import { Context } from "graphql-ws/lib/server";
 import { PubSub } from "graphql-subscriptions";
+import { messagePopulated } from "../graphql/resolvers/message";
 
 // Server Config
 
@@ -57,4 +58,10 @@ export interface SendMessageArguments {
   conversationId: string;
   senderId: string;
   body: string;
+}
+export type MessagePopulated = Prisma.MessageGetPayload<{
+  include: typeof messagePopulated;
+}>;
+export interface MessageSentSubscriptionPayload {
+  messageSent: MessagePopulated;
 }
