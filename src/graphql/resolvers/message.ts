@@ -86,6 +86,16 @@ const resolvers = {
           include: messagePopulated,
         });
 
+        // Find Conversation Participant Entity
+        const participant = await prisma.conversationParticipant.findFirst({
+          where: {
+            userId,
+            conversationId,
+          },
+        });
+
+        if (!participant) throw new GraphQLError("Participant does not exist");
+
         // Update Conversation Entity
         const conversation = await prisma.conversation.update({
           where: {
@@ -96,7 +106,7 @@ const resolvers = {
             participants: {
               update: {
                 where: {
-                  id: senderId,
+                  id: participant?.id,
                 },
                 data: {
                   hasSeenLatestMessage: true,
@@ -114,6 +124,7 @@ const resolvers = {
               },
             },
           },
+          include: conversationPopulated,
         });
 
         // Subscription Update
