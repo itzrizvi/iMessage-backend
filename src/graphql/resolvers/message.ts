@@ -95,6 +95,7 @@ const resolvers = {
         });
 
         if (!participant) throw new GraphQLError("Participant does not exist");
+        const { id: participantId } = participant;
 
         // Update Conversation Entity
         const conversation = await prisma.conversation.update({
@@ -106,7 +107,7 @@ const resolvers = {
             participants: {
               update: {
                 where: {
-                  id: participant?.id,
+                  id: participantId,
                 },
                 data: {
                   hasSeenLatestMessage: true,
@@ -114,9 +115,7 @@ const resolvers = {
               },
               updateMany: {
                 where: {
-                  NOT: {
-                    userId: senderId,
-                  },
+                  userId: { not: userId },
                 },
                 data: {
                   hasSeenLatestMessage: false,
@@ -134,12 +133,11 @@ const resolvers = {
         //     conversation,
         //   },
         // });
+        return true;
       } catch (error: any) {
         console.error(error);
         throw new GraphQLError(error?.message);
       }
-
-      return true;
     },
   },
   Subscription: {
