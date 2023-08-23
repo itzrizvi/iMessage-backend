@@ -1,5 +1,9 @@
 import { GraphQLError } from "graphql";
-import { ConversationPopulated, GraphQLContext } from "../../utils/types";
+import {
+  ConversationPopulated,
+  ConversationUpdatedSubscriptionPayload,
+  GraphQLContext,
+} from "../../utils/types";
 import { Conversation, Prisma } from "@prisma/client";
 import { withFilter } from "graphql-subscriptions";
 import { userIsConversationParticipant } from "../../utils/userIsConversationParticipant";
@@ -139,6 +143,38 @@ const resolvers = {
           } = payload;
 
           return userIsConversationParticipant(participants, userId);
+        },
+      ),
+    },
+    conversationUpdated: {
+      subscribe: withFilter(
+        (__: any, ___: any, context: GraphQLContext) => {
+          const { pubsub } = context;
+          return pubsub.asyncIterator(["CONVERSATION_UPDATED"]);
+        },
+        (
+          payload: ConversationUpdatedSubscriptionPayload,
+          _: any,
+          context: GraphQLContext,
+        ) => {
+          const { session } = context;
+          if (!session?.user) throw new GraphQLError("Not Authorized");
+
+          console.log("PAYLOAD REC", payload);
+
+          const { id: userId } = session.user;
+          const {
+            conversationUpdated: {
+              conversation: { participants },
+            },
+          } = payload;
+
+          const userIsParticipant = userIsConversationParticipant(
+            participants,
+            userId,
+          );
+
+          return userIsParticipant;
         },
       ),
     },
