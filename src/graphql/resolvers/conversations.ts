@@ -160,8 +160,6 @@ const resolvers = {
           const { session } = context;
           if (!session?.user) throw new GraphQLError("Not Authorized");
 
-          console.log("PAYLOAD REC", payload);
-
           const { id: userId } = session.user;
           const {
             conversationUpdated: {
