@@ -1,5 +1,6 @@
 import { GraphQLError } from "graphql";
 import {
+  ConversationDeletedSubscriptionPayload,
   ConversationPopulated,
   ConversationUpdatedSubscriptionPayload,
   GraphQLContext,
@@ -206,12 +207,30 @@ const resolvers = {
             },
           } = payload;
 
-          const userIsParticipant = userIsConversationParticipant(
-            participants,
-            userId,
-          );
+          return userIsConversationParticipant(participants, userId);
+        },
+      ),
+    },
+    conversationDeleted: {
+      subscribe: withFilter(
+        (__: any, ___: any, context: GraphQLContext) => {
+          const { pubsub } = context;
+          return pubsub.asyncIterator(["CONVERSATION_DELETED"]);
+        },
+        (
+          payload: ConversationDeletedSubscriptionPayload,
+          _: any,
+          context: GraphQLContext,
+        ) => {
+          const { session } = context;
+          if (!session?.user) throw new GraphQLError("Not Authorized");
 
-          return userIsParticipant;
+          const { id: userId } = session.user;
+          const {
+            conversationDeleted: { participants },
+          } = payload;
+
+          return userIsConversationParticipant(participants, userId);
         },
       ),
     },
