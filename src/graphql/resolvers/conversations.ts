@@ -131,8 +131,6 @@ const resolvers = {
       if (!session?.user) throw new GraphQLError("Not authorized");
 
       try {
-        console.log("CONVERSATION ID", conversationId);
-
         // Find the conversation before deletion to access related data
         const conversationToDelete = await prisma.conversation.findUnique({
           where: {
