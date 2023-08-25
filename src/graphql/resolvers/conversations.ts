@@ -131,28 +131,59 @@ const resolvers = {
       if (!session?.user) throw new GraphQLError("Not authorized");
 
       try {
-        const [deletedConversation] = await prisma.$transaction([
-          prisma.conversation.delete({
+        console.log("CONVERSATION ID", conversationId);
+
+        // Find the conversation before deletion to access related data
+        const conversationToDelete = await prisma.conversation.findUnique({
+          where: {
+            id: conversationId,
+          },
+          include: {
+            messages: true, // Include related messages for deletion
+            participants: true, // Include related participants for deletion
+          },
+        });
+
+        if (!conversationToDelete) {
+          throw new GraphQLError("Conversation not found");
+        }
+
+        // Update the latestMessageId of the conversation to null
+        if (conversationToDelete.latestMessageId) {
+          await prisma.conversation.update({
             where: {
               id: conversationId,
             },
-            include: conversationPopulated,
-          }),
-          prisma.conversationParticipant.deleteMany({
-            where: {
-              conversationId,
+            data: {
+              latestMessageId: null,
             },
-          }),
-          prisma.message.deleteMany({
-            where: {
-              conversationId,
-            },
-          }),
-        ]);
+          });
+        }
+
+        // Delete the messages associated with the conversation
+        await prisma.message.deleteMany({
+          where: {
+            conversationId,
+          },
+        });
+
+        // Delete the conversation participants
+        await prisma.conversationParticipant.deleteMany({
+          where: {
+            conversationId,
+          },
+        });
+
+        // Delete the conversation
+        await prisma.conversation.delete({
+          where: {
+            id: conversationId,
+          },
+        });
 
         // Subscription Publish
         pubsub.publish("CONVERSATION_DELETED", {
-          conversationDeleted: deletedConversation,
+          conversationDeleted: conversationToDelete,
         });
 
         return true;

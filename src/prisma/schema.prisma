@@ -63,7 +63,7 @@ model Conversation {
     latestMessageId String?                   @unique @db.ObjectId
     latestMessage   Message?                  @relation(name: "latestConversationMessage", fields: [latestMessageId], references: [id], onDelete: NoAction, onUpdate: NoAction)
     participants    ConversationParticipant[]
-    messages        Message[]
+    messages        Message[]                 @relation("conversationMessages")
 }
 
 model ConversationParticipant {
@@ -85,6 +85,6 @@ model Message {
     sender         User          @relation(fields: [senderId], references: [id])
     body           String
     conversationId String        @db.ObjectId
-    conversation   Conversation  @relation(fields: [conversationId], references: [id])
+    conversation   Conversation  @relation(name: "conversationMessages", fields: [conversationId], references: [id])
     isLatestIn     Conversation? @relation(name: "latestConversationMessage")
 }
