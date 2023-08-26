@@ -88,6 +88,7 @@ app.use(
       const session = (await getServerSession(
         req.headers.cookie,
       )) as Session | null;
+      console.log("INDEX", session);
       return { session, prisma, pubsub };
     },
   }),
