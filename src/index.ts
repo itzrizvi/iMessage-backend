@@ -84,10 +84,12 @@ app.use(
   cors<cors.CorsRequest>(corsOptions),
   json(),
   expressMiddleware(server, {
-    context: async ({ req, res }): Promise<GraphQLContext> => {
+    context: async ({ req }): Promise<GraphQLContext> => {
+      console.log("COOK", req.headers.cookie);
       const session = (await getServerSession(
         req.headers.cookie,
       )) as Session | null;
+      //   const session = (await getSession({ req })) as Session | null;
       console.log("INDEX", session);
       return { session, prisma, pubsub };
     },
