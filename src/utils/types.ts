@@ -16,6 +16,15 @@ export interface GraphQLContext {
   pubsub: PubSub;
 }
 
+export interface User {
+  id: string;
+  username: string;
+  image: string;
+  email: string;
+  emailVerified: Boolean;
+  name: string;
+}
+
 // User Interface
 export interface Session {
   user: User;
@@ -27,15 +36,6 @@ export interface SubscriptionContext extends Context {
   connectionParams: {
     session?: Session;
   };
-}
-
-export interface User {
-  id: string;
-  username: string;
-  image: string;
-  email: string;
-  emailVerified: Boolean;
-  name: string;
 }
 
 export interface CreateUsernameResponse {
