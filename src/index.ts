@@ -94,6 +94,7 @@ app.use(
   expressMiddleware(server, {
     context: async ({ req }): Promise<GraphQLContext> => {
       console.log("COOK", req.headers.cookie);
+      console.log("HEADERS", req.headers);
       const session = await getServerSession(req.headers.cookie);
       //   const session = (await getSession({ req })) as Session | null;
       console.log("INDEX", session);
