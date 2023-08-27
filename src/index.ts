@@ -103,7 +103,7 @@ app.use(
         }
         const cookiesValue = extractCookiesValue(req.rawHeaders);
         console.log(cookiesValue);
-        const session = await getServerSession(cookiesValue);
+        const session = await getServerSession(`${cookiesValue}`);
         return { session: session as Session, prisma, pubsub };
       } else {
         console.log("Cookies header not found in the raw header data.");
