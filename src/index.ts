@@ -11,14 +11,13 @@ import typeDefs from "./graphql/typeDefs";
 import resolvers from "./graphql/resolvers";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import dotenv from "dotenv";
-// import { getServerSession } from "./utils/getServerSession";
-import { getSession } from "next-auth/react";
 import { GraphQLContext, Session, SubscriptionContext } from "./utils/types";
 import { PrismaClient } from "@prisma/client";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { PubSub } from "graphql-subscriptions";
 import cookieParser from "cookie-parser";
+import { getServerSession } from "./utils/getServerSession";
 dotenv.config();
 
 const corsOptions = {
@@ -90,9 +89,20 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      console.log("REQUEST", req);
-      const session = await getSession({ req });
-      console.log("INDEX SESSION", session);
+      // Convert cookies object to a formatted string
+      const cookies = Object.entries(req.cookies)
+        .map(([name, value]) => {
+          if (typeof value === "string") {
+            return `${name}=${encodeURIComponent(value)}`;
+          }
+          return ""; // Handle invalid values if needed
+        })
+        .join("; ");
+
+      // Assign the formatted cookies to req.headers.cookie
+      req.headers.cookie = cookies;
+
+      const session = await getServerSession(req.headers.cookie);
       return { session: session as Session, prisma, pubsub };
     },
   }),

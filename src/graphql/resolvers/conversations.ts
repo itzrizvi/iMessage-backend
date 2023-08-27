@@ -17,7 +17,6 @@ const resolvers = {
       context: GraphQLContext,
     ): Promise<Array<Conversation>> => {
       const { session, prisma } = context;
-      console.log("QUERY", session);
       if (!session?.user) throw new GraphQLError("Not Authorized");
 
       const {
