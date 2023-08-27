@@ -62,7 +62,7 @@ const serverCleanup = useServer(
 
 const server = new ApolloServer({
   schema,
-  csrfPrevention: true,
+  csrfPrevention: false,
   cache: "bounded",
   plugins: [
     {
@@ -76,12 +76,12 @@ const server = new ApolloServer({
     },
     ApolloServerPluginDrainHttpServer({ httpServer }),
     ApolloServerPluginLandingPageLocalDefault({
-      embed: true,
       includeCookies: true,
     }),
   ],
 });
 await server.start();
+app.set("trust proxy", true);
 app.use(
   "/graphql",
   cors<cors.CorsRequest>(corsOptions),
@@ -101,7 +101,6 @@ app.use(
       //   console.log("COOK 1", req.cookies);
       //   // Assign the formatted cookies to req.headers.cookie
       //   req.headers.cookie = cookies;
-      console.log("REQ", req);
       console.log("HEADER", req.headers);
       const session = await getServerSession(req.headers.cookie);
       return { session: session as Session, prisma, pubsub };
