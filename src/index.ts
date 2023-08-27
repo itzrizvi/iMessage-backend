@@ -89,19 +89,19 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      // Convert cookies object to a formatted string
-      const cookies = Object.entries(req.cookies)
-        .map(([name, value]) => {
-          if (typeof value === "string") {
-            return `${name}=${encodeURIComponent(value)}`;
-          }
-          return ""; // Handle invalid values if needed
-        })
-        .join("; ");
-      console.log("COOK 1", req.cookies);
-      // Assign the formatted cookies to req.headers.cookie
-      req.headers.cookie = cookies;
-      console.log("COOK 2", req.headers.cookie);
+      //   // Convert cookies object to a formatted string
+      //   const cookies = Object.entries(req.cookies)
+      //     .map(([name, value]) => {
+      //       if (typeof value === "string") {
+      //         return `${name}=${encodeURIComponent(value)}`;
+      //       }
+      //       return ""; // Handle invalid values if needed
+      //     })
+      //     .join("; ");
+      //   console.log("COOK 1", req.cookies);
+      //   // Assign the formatted cookies to req.headers.cookie
+      //   req.headers.cookie = cookies;
+      console.log("HEADER", req.headers);
       const session = await getServerSession(req.headers.cookie);
       return { session: session as Session, prisma, pubsub };
     },
