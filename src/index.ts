@@ -89,25 +89,8 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      const cookiesEntry = req.rawHeaders.find((entry) =>
-        entry.startsWith("Cookies"),
-      );
-      if (cookiesEntry) {
-        function extractCookiesValue(rawHeader: Array<string>) {
-          for (let i = 0; i < rawHeader.length - 1; i++) {
-            if (rawHeader[i].toLowerCase() === "cookies") {
-              return rawHeader[i + 1];
-            }
-          }
-          return null;
-        }
-        const cookiesValue = extractCookiesValue(req.rawHeaders);
-        console.log(cookiesValue);
-        const session = await getServerSession(`${cookiesValue}`);
-        return { session: session as Session, prisma, pubsub };
-      } else {
-        console.log("Cookies header not found in the raw header data.");
-      }
+      const session = await getServerSession(req.headers.cookie);
+      return { session: session as Session, prisma, pubsub };
     },
   }),
 );
