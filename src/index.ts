@@ -89,22 +89,17 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      //   // Convert cookies object to a formatted string
-      //   const cookies = Object.entries(req.cookies)
-      //     .map(([name, value]) => {
-      //       if (typeof value === "string") {
-      //         return `${name}=${encodeURIComponent(value)}`;
-      //       }
-      //       return ""; // Handle invalid values if needed
-      //     })
-      //     .join("; ");
-      //   console.log("COOK 1", req.cookies);
-      //   // Assign the formatted cookies to req.headers.cookie
-      //   req.headers.cookie = cookies;
-      console.log("REQUESTSSS", req.cookies);
-      console.log("REQUESTSSS 3", req.rawHeaders);
-      const session = await getServerSession(req.cookies);
-      return { session: session as Session, prisma, pubsub };
+      const cookiesEntry = req.rawHeaders.find((entry) =>
+        entry.startsWith("Cookies"),
+      );
+      if (cookiesEntry) {
+        const cookiesValue = cookiesEntry.substring("Cookies".length + 2);
+        console.log(cookiesValue);
+        const session = await getServerSession(cookiesValue);
+        return { session: session as Session, prisma, pubsub };
+      } else {
+        console.log("Cookies header not found in the raw header data.");
+      }
     },
   }),
 );
