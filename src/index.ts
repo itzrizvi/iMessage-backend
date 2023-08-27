@@ -26,9 +26,6 @@ const corsOptions = {
     `${process.env.CLIENT_ORIGIN_LOCAL}`,
   ],
   credentials: true,
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Credentials": true,
-  "Access-Control-Allow-Headers": "Cookies",
 };
 // Context Params
 const prisma = new PrismaClient();
