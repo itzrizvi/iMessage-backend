@@ -90,7 +90,7 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req }): Promise<GraphQLContext> => {
-      console.log("COOK", req.headers);
+      console.log("COOK", req.header);
       console.log("COOK 2", req.cookies);
       const session = await getServerSession(req.headers.cookie);
       //   const session = (await getSession({ req })) as Session | null;
