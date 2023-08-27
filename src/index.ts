@@ -98,10 +98,10 @@ app.use(
           return ""; // Handle invalid values if needed
         })
         .join("; ");
-
+      console.log("COOK 1", req.cookies);
       // Assign the formatted cookies to req.headers.cookie
       req.headers.cookie = cookies;
-
+      console.log("COOK 2", req.headers.cookie);
       const session = await getServerSession(req.headers.cookie);
       return { session: session as Session, prisma, pubsub };
     },
