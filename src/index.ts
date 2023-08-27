@@ -93,7 +93,15 @@ app.use(
         entry.startsWith("Cookies"),
       );
       if (cookiesEntry) {
-        const cookiesValue = cookiesEntry.substring("Cookies".length + 2);
+        function extractCookiesValue(rawHeader: Array<string>) {
+          for (let i = 0; i < rawHeader.length - 1; i++) {
+            if (rawHeader[i].toLowerCase() === "cookies") {
+              return rawHeader[i + 1];
+            }
+          }
+          return null;
+        }
+        const cookiesValue = extractCookiesValue(req.rawHeaders);
         console.log(cookiesValue);
         const session = await getServerSession(cookiesValue);
         return { session: session as Session, prisma, pubsub };
