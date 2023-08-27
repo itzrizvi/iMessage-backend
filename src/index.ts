@@ -79,7 +79,10 @@ const server = new ApolloServer<MyContext>({
       },
     },
     ApolloServerPluginDrainHttpServer({ httpServer }),
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ApolloServerPluginLandingPageLocalDefault({
+      embed: true,
+      includeCookies: true,
+    }),
   ],
 });
 await server.start();
@@ -90,8 +93,7 @@ app.use(
   json(),
   expressMiddleware(server, {
     context: async ({ req }): Promise<GraphQLContext> => {
-      console.log("COOK", req.header);
-      console.log("COOK 2", req.cookies);
+      console.log("COOK", req.headers.cookie);
       const session = await getServerSession(req.headers.cookie);
       //   const session = (await getSession({ req })) as Session | null;
       console.log("INDEX", session);
