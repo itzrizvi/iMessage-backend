@@ -17,6 +17,7 @@ import { PrismaClient } from "@prisma/client";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { PubSub } from "graphql-subscriptions";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 interface MyContext {
@@ -85,6 +86,7 @@ await server.start();
 app.use(
   "/graphql",
   cors<cors.CorsRequest>(corsOptions),
+  cookieParser(),
   json(),
   expressMiddleware(server, {
     context: async ({ req }): Promise<GraphQLContext> => {
