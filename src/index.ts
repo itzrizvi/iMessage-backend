@@ -102,8 +102,7 @@ app.use(
       //   // Assign the formatted cookies to req.headers.cookie
       //   req.headers.cookie = cookies;
       console.log("REQUESTSSS", req.cookies);
-      console.log("REQUESTSSS 2", req.header);
-      console.log("REQUESTSSS 3", req.headers.cookie);
+      console.log("REQUESTSSS 3", req.rawHeaders);
       const session = await getServerSession(req.cookies);
       return { session: session as Session, prisma, pubsub };
     },
