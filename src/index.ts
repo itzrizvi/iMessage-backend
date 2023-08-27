@@ -24,7 +24,10 @@ interface MyContext {
 }
 
 const corsOptions = {
-  origin: [`${process.env.CLIENT_ORIGIN}`],
+  origin: [
+    `${process.env.CLIENT_ORIGIN}`,
+    `${process.env.CLIENT_ORIGIN_LOCAL}`,
+  ],
   credentials: true,
 };
 // Context Params
