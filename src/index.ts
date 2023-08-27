@@ -20,7 +20,7 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { PubSub } from "graphql-subscriptions";
 import cookieParser from "cookie-parser";
-import Nextauth from "./auth/[...nextauth]";
+import { authOptions } from "./auth/[...nextauth]";
 dotenv.config();
 
 const corsOptions = {
@@ -93,7 +93,7 @@ app.use(
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
       console.log("REQUEST", req);
-      const session = await getServerSession(req, res, Nextauth);
+      const session = await getServerSession(req, res, authOptions);
       //   const session = await getSession({ req });
       console.log("INDEX SESSION", session);
       return { session: session as Session, prisma, pubsub };
