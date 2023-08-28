@@ -17,7 +17,9 @@ import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 import { PubSub } from "graphql-subscriptions";
 import cookieParser from "cookie-parser";
-import { getServerSession } from "./utils/getServerSession";
+import verifyTokenMiddleware, {
+  CustomRequest,
+} from "./middlewares/verifyTokenMiddleware";
 dotenv.config();
 
 const corsOptions = {
@@ -87,9 +89,10 @@ app.use(
   cors<cors.CorsRequest>(corsOptions),
   cookieParser(),
   json(),
+  verifyTokenMiddleware,
   expressMiddleware(server, {
     context: async ({ req, res }): Promise<GraphQLContext> => {
-      const session = await getServerSession(req.headers.cookie);
+      const session = (req as CustomRequest).user;
       return { session: session as Session, prisma, pubsub };
     },
   }),

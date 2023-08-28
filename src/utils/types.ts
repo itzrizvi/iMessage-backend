@@ -29,6 +29,7 @@ export interface User {
 export interface Session {
   user: User;
   expires: ISODateString;
+  authToken: string;
 }
 
 // Subscription Context
